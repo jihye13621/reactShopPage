@@ -4,7 +4,6 @@ import Head from "next/head";
 
 import "../styles/globals.css";
 import "@fontsource/sora";
-import AdminLayout from "../layouts/AdminLayout";
 
 const theme = extendTheme({
   fonts: {
@@ -19,13 +18,10 @@ function App({ Component, pageProps }: AppProps) {
       <SafeHydrate>
         <ChakraProvider theme={theme}>
           <Head>
-            <title>Create Next App</title>
+            <title>Local Shop</title>
             <link rel="icon" href="/favicon.ico" />
           </Head>
-
-          <AdminLayout>
-            <Component {...pageProps} />
-          </AdminLayout>
+          <Component {...pageProps} />
         </ChakraProvider>
       </SafeHydrate>
     </>

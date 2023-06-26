@@ -1,166 +1,54 @@
-import { Button } from "@chakra-ui/button";
-import { Box, Center, Heading, Stack, Text } from "@chakra-ui/layout";
-import { Spinner } from "@chakra-ui/spinner";
-import { Fade } from "@chakra-ui/transition";
-import { useRef, useState } from "react";
+import { Box, Grid } from '@chakra-ui/react';
+import { SlideFade } from '@chakra-ui/transition';
+import { useEffect, useState } from 'react';
 
-import {
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  FormLabel,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  InputRightAddon,
-  Select,
-  Textarea,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
+import JumbotronHeader from '../components/JumbotronHeader';
+import ProductResultsHeader from '../components/ProductResultsHeader';
+import ProductCard from '../components/ProductCard';
+import SkeletonLoading from '../components/SkeletonLoading';
 
-import AppTable from "../components/AppTable";
-import { AddIcon } from "@chakra-ui/icons";
+function ProfileView() {
+	const [ isLoading, setLoading ] = useState(true);
+	setTimeout(() => {
+		setLoading(false);
+	}, 1500);
 
-function Home() {
-  const [isLoading, setLoading] = useState<boolean>(true);
+	const [ shopData, setShopData ] = useState(null);
 
-  // simulating an API call
-  setTimeout(() => {
-    setLoading(false);
-  }, 1000);
+	useEffect(() => {
+		fetch('https://fakestoreapi.com/products/').then((res) => res.json()).then((data) => setShopData(data));
+		console.count('hi');
+	}, []);
+	console.log('shopData: ', shopData);
 
-  if (isLoading) {
-    return (
-      <Center
-        height="100%"
-        display="flex"
-        justifyContent="center"
-        alignContent="center"
-      >
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="blue.500"
-          size="xl"
-        />
-      </Center>
-    );
-  }
+	if (isLoading) {
+		return (
+			<Box p="10">
+				<SkeletonLoading />
+			</Box>
+		);
+	}
 
-  return (
-    <>
-      <Fade in={!isLoading}>
-        <Box>
-          <Box display="flex" justifyContent="space-between" marginBottom="5">
-            <Heading>Users</Heading>
-            <_CreateUserDrawer />
-          </Box>
-          <Box borderRadius="md">
-            <AppTable></AppTable>
-          </Box>
-        </Box>
-      </Fade>
-    </>
-  );
+	return (
+		<Box p="10">
+			<SlideFade in={!isLoading} offsetY="-20px">
+				<JumbotronHeader />
+				<ProductResultsHeader />
+				<hr />
+				<Box pt="8">
+					{shopData &&
+					shopData.length > 0 && (
+						<Grid
+							templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3,1fr)', lg: 'repeat(5, 1fr)' }}
+							gap={6}
+						>
+							{shopData.map((product, x) => <ProductCard key={x} product={product} />)}
+						</Grid>
+					)}
+				</Box>
+			</SlideFade>
+		</Box>
+	);
 }
 
-export default Home;
-
-// DMV
-// Th, Fri, Saturday, 8AM
-
-function _CreateUserDrawer() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
-  const firstField = useRef();
-
-  return (
-    <>
-      <Button colorScheme="blue" onClick={onOpen} size="lg">
-        Create
-      </Button>
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        initialFocusRef={firstField}
-        onClose={onClose}
-        size="md"
-      >
-        <DrawerOverlay>
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader borderBottomWidth="1px">
-              Create a new account
-            </DrawerHeader>
-
-            <DrawerBody>
-              <Stack spacing="24px">
-                <Box>
-                  <FormLabel htmlFor="username">Name</FormLabel>
-                  <Input
-                    ref={firstField}
-                    id="username"
-                    placeholder="Please enter user name"
-                  />
-                </Box>
-
-                <Box>
-                  <FormLabel htmlFor="url">Url</FormLabel>
-                  <InputGroup>
-                    <InputLeftAddon>http://</InputLeftAddon>
-                    <Input
-                      type="url"
-                      id="url"
-                      placeholder="Please enter domain"
-                    />
-                    <InputRightAddon>.com</InputRightAddon>
-                  </InputGroup>
-                </Box>
-
-                <Box>
-                  <FormLabel htmlFor="owner">Select Owner</FormLabel>
-                  <Select id="owner" defaultValue="segun">
-                    <option value="segun">Segun Adebayo</option>
-                    <option value="kola">Kola Tioluwani</option>
-                  </Select>
-                </Box>
-
-                <Box>
-                  <FormLabel htmlFor="desc">Description</FormLabel>
-                  <Textarea id="desc" />
-                </Box>
-              </Stack>
-            </DrawerBody>
-
-            <DrawerFooter borderTopWidth="1px">
-              <Button variant="outline" mr={3} onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                colorScheme="blue"
-                onClick={() => {
-                  toast({
-                    title: "User created.",
-                    description: "A new user has been created.",
-                    status: "success",
-                    duration: 9000,
-                    isClosable: true,
-                  });
-                  onClose();
-                }}
-              >
-                Submit
-              </Button>
-            </DrawerFooter>
-          </DrawerContent>
-        </DrawerOverlay>
-      </Drawer>
-    </>
-  );
-}
+export default ProfileView;

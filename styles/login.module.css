@@ -1,0 +1,16 @@
+.login {
+  animation-name: loginSpin;
+  animation-duration: 20000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  z-index: 5;
+  width: 300px;
+}
+@keyframes loginSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
